@@ -33,13 +33,34 @@ pub struct AddRentalSpaceRequest {
     pub owner_id: String,
 }
 
-#[derive(Debug, Deserialize, Validate)]
+#[derive(Debug)]
+pub struct Split {
+    base: BaseFields<SplitId>,
+    name: String,
+    address: String,
+    surface: u32,
+    nb_workstations: u32,
+    price_per_workstation: u32,
+    parent_office_id: RentalSpaceId,
+    owner_id: UserId,
+}
+
+#[derive(Debug)]
+struct SplitId {
+    value: String,
+}
+
+#[derive(Debug, Deserialize, Validate, Clone)]
 pub struct RentalSpaceId {
     value: String,
 }
 
 impl PrefixedUuid for RentalSpaceId {
     const PREFIX: &'static str = "ofc";
+}
+
+impl PrefixedUuid for SplitId {
+    const PREFIX: &'static str = "spl";
 }
 
 impl RentalSpace {
@@ -57,6 +78,23 @@ impl RentalSpace {
             parent_office_id: request.parent_office_id,
             owner_id: owner_id,
         })
+    }
+}
+
+impl Into<Split> for RentalSpace {
+    fn into(self) -> Split {
+        Split {
+            base: BaseFields::new(SplitId {
+                value: SplitId::generate(),
+            }),
+            name: self.name,
+            address: self.address,
+            surface: self.surface,
+            nb_workstations: self.nb_workstations,
+            price_per_workstation: self.price_per_workstation,
+            parent_office_id: self.base.id.clone(),
+            owner_id: self.owner_id,
+        }
     }
 }
 

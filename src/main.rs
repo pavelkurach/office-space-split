@@ -1,4 +1,4 @@
-use office_space_split::{rental_space::*, split::*, user::*, user_interface::*, *};
+use office_space_split::{rental_space::*, user::*, user_interface::*, *};
 
 fn example_storage() -> ObjectStorage {
     let add_user_request = AddUserRequest {

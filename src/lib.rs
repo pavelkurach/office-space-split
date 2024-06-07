@@ -1,5 +1,4 @@
 pub mod rental_space;
-pub mod split;
 pub mod user;
 pub mod user_interface;
 
@@ -25,7 +24,7 @@ pub struct BaseFields<Id: PrefixedUuid> {
 pub struct ObjectStorage {
     users: Vec<user::User>,
     rental_spaces: Vec<rental_space::RentalSpace>,
-    splits: Vec<split::Split>,
+    splits: Vec<rental_space::Split>,
 }
 
 impl<Id: PrefixedUuid> BaseFields<Id> {
