@@ -17,7 +17,7 @@ pub struct AddUserRequest {
     pub workspace_request: Option<WorkspaceRequest>,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Eq, PartialEq, Hash)]
 pub struct UserId {
     value: String,
 }
@@ -42,6 +42,10 @@ impl User {
 
     pub fn id(&self) -> &UserId {
         &self.base.id
+    }
+
+    pub fn id_value(&self) -> &str {
+        &self.id().value
     }
 }
 

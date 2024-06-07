@@ -15,7 +15,6 @@ pub struct RentalSpace {
     surface: u32,
     nb_workstations: u32,
     price_per_workstation: u32,
-    parent_office_id: Option<RentalSpaceId>,
     owner_id: UserId,
 }
 
@@ -29,7 +28,6 @@ pub struct AddRentalSpaceRequest {
     pub nb_workstations: u32,
     #[validate(range(exclusive_min = 300, max = 800))]
     pub price_per_workstation: u32,
-    pub parent_office_id: Option<RentalSpaceId>,
     pub owner_id: String,
 }
 
@@ -50,9 +48,21 @@ struct SplitId {
     value: String,
 }
 
-#[derive(Debug, Deserialize, Validate, Clone)]
+#[derive(Debug, Clone, Eq, PartialEq, Hash)]
 pub struct RentalSpaceId {
     value: String,
+}
+
+impl RentalSpaceId {
+    pub fn mathces(&self, id: &str) -> bool {
+        self.value == id
+    }
+}
+
+impl SplitId {
+    pub fn mathces(&self, id: &str) -> bool {
+        self.value == id
+    }
 }
 
 impl PrefixedUuid for RentalSpaceId {
@@ -75,25 +85,32 @@ impl RentalSpace {
             surface: request.surface,
             nb_workstations: request.nb_workstations,
             price_per_workstation: request.price_per_workstation,
-            parent_office_id: request.parent_office_id,
-            owner_id: owner_id,
+            owner_id,
         })
+    }
+
+    pub fn id(&self) -> &RentalSpaceId {
+        &self.base.id
+    }
+
+    pub fn id_value(&self) -> &str {
+        &self.id().value
     }
 }
 
-impl Into<Split> for RentalSpace {
+impl Into<Split> for &RentalSpace {
     fn into(self) -> Split {
         Split {
             base: BaseFields::new(SplitId {
                 value: SplitId::generate(),
             }),
-            name: self.name,
-            address: self.address,
+            name: self.name.to_owned(),
+            address: self.address.to_owned(),
             surface: self.surface,
             nb_workstations: self.nb_workstations,
             price_per_workstation: self.price_per_workstation,
             parent_office_id: self.base.id.clone(),
-            owner_id: self.owner_id,
+            owner_id: self.owner_id.clone(),
         }
     }
 }
