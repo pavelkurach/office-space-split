@@ -1,4 +1,5 @@
-pub(crate) mod office;
+pub(crate) mod rental_space;
+pub(crate) mod split;
 pub(crate) mod user;
 
 use {
@@ -14,9 +15,10 @@ pub(crate) trait PrefixedUuid {
     }
 }
 
+#[derive(Debug)]
 pub(crate) struct BaseFields<Id: PrefixedUuid> {
-    pub(crate) id: Id,
-    pub(crate) created_at: DateTime<Utc>,
+    id: Id,
+    created_at: DateTime<Utc>,
 }
 
 impl<Id: PrefixedUuid> BaseFields<Id> {
