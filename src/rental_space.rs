@@ -1,14 +1,14 @@
 use super::{BaseFields, PrefixedUuid};
 
 use {
-    serde::{Deserialize, Serialize},
+    serde::Deserialize,
     validator::{Validate, ValidationError},
 };
 
 use crate::user::UserId;
 
 #[derive(Debug)]
-pub(crate) struct RentalSpace {
+pub struct RentalSpace {
     base: BaseFields<RentalSpaceId>,
     name: String,
     address: String,
@@ -19,22 +19,22 @@ pub(crate) struct RentalSpace {
     owner_id: UserId,
 }
 
-#[derive(Debug, Serialize, Deserialize, Validate)]
+#[derive(Debug, Deserialize, Validate)]
 #[validate(schema(function = "validate_workstation_density"))]
-pub(crate) struct AddRentalSpaceRequest {
-    pub(crate) name: String,
-    pub(crate) address: String,
-    pub(crate) surface: u32,
+pub struct AddRentalSpaceRequest {
+    pub name: String,
+    pub address: String,
+    pub surface: u32,
     #[validate(range(exclusive_min = 40, exclusive_max = 180))]
-    pub(crate) nb_workstations: u32,
+    pub nb_workstations: u32,
     #[validate(range(exclusive_min = 300, max = 800))]
-    pub(crate) price_per_workstation: u32,
-    pub(crate) parent_office_id: Option<RentalSpaceId>,
-    pub(crate) owner_id: UserId,
+    pub price_per_workstation: u32,
+    pub parent_office_id: Option<RentalSpaceId>,
+    pub owner_id: String,
 }
 
-#[derive(Debug, Serialize, Deserialize, Validate)]
-pub(crate) struct RentalSpaceId {
+#[derive(Debug, Deserialize, Validate)]
+pub struct RentalSpaceId {
     value: String,
 }
 
@@ -43,7 +43,7 @@ impl PrefixedUuid for RentalSpaceId {
 }
 
 impl RentalSpace {
-    pub(crate) fn new(request: AddRentalSpaceRequest) -> anyhow::Result<Self> {
+    pub fn new(request: AddRentalSpaceRequest, owner_id: UserId) -> anyhow::Result<Self> {
         request.validate()?;
         Ok(Self {
             base: BaseFields::new(RentalSpaceId {
@@ -55,7 +55,7 @@ impl RentalSpace {
             nb_workstations: request.nb_workstations,
             price_per_workstation: request.price_per_workstation,
             parent_office_id: request.parent_office_id,
-            owner_id: request.owner_id,
+            owner_id: owner_id,
         })
     }
 }

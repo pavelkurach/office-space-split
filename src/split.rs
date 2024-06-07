@@ -3,22 +3,22 @@ use super::{BaseFields, PrefixedUuid};
 use crate::user::UserId;
 
 #[derive(Debug)]
-pub(crate) struct SplitId {
-    pub(crate) value: String,
-}
-
-impl PrefixedUuid for SplitId {
-    const PREFIX: &'static str = "ofc";
+pub struct Split {
+    pub base: BaseFields<SplitId>,
+    pub name: String,
+    pub address: String,
+    pub surface: u32,
+    pub nb_workstations: u32,
+    pub price_per_workstation: u32,
+    pub parent_office_id: Option<SplitId>,
+    pub owner_id: UserId,
 }
 
 #[derive(Debug)]
-pub(crate) struct Split {
-    pub(crate) base: BaseFields<SplitId>,
-    pub(crate) name: String,
-    pub(crate) address: String,
-    pub(crate) surface: u32,
-    pub(crate) nb_workstations: u32,
-    pub(crate) price_per_workstation: u32,
-    pub(crate) parent_office_id: Option<SplitId>,
-    pub(crate) owner_id: UserId,
+pub struct SplitId {
+    pub value: String,
+}
+
+impl PrefixedUuid for SplitId {
+    const PREFIX: &'static str = "spl";
 }
