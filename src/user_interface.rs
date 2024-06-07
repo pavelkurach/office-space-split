@@ -1,14 +1,11 @@
 use crate::{
+    matching::MatchingEngine,
     object_storage::ObjectStorage,
     rental_space::{AddRentalSpaceRequest, RentalSpace},
     user::{AddUserRequest, User},
 };
 
-use inquire::{
-    error::InquireError,
-    ui::{Color, RenderConfig, Styled},
-    Editor, Select,
-};
+use inquire::{error::InquireError, Editor, Select};
 
 pub struct Interface<'a> {
     storage: &'a mut ObjectStorage,
@@ -64,7 +61,7 @@ impl<'a> Interface<'a> {
     }
 
     pub fn print_objects(&self) {
-        let categories: Vec<&str> = vec!["users", "rental_spaces", "splits", "all"];
+        let categories: Vec<&str> = vec!["users", "rental_spaces", "all"];
 
         let ans: Result<&str, InquireError> = Select::new("Select category", categories).prompt();
 
@@ -75,23 +72,22 @@ impl<'a> Interface<'a> {
             Ok("rental_spaces") => {
                 self.print_rental_spaces();
             }
-            Ok("splits") => {
-                self.print_splits();
-            }
             Ok("all") => {
                 println!("Users:\n");
                 self.print_users();
                 println!("Rental Spaces:\n");
                 self.print_rental_spaces();
-                println!("Splits:\n");
-                self.print_splits();
             }
             Ok(_) => println!("Invalid category"),
             Err(_) => println!("There was an error, please try again"),
         }
     }
 
-    pub fn match_objects(&mut self) {}
+    pub fn match_objects(&mut self) {
+        let matching_engine = MatchingEngine::new(self.storage);
+        let matchings = matching_engine.get_greedy_matchings();
+        println!("{:#?}", matchings);
+    }
 
     fn add_user(&mut self, user_json: &str) -> anyhow::Result<()> {
         let request: AddUserRequest = serde_json::from_str(user_json)?;
@@ -123,12 +119,6 @@ impl<'a> Interface<'a> {
     fn print_rental_spaces(&self) {
         for rental_space in &self.storage.rental_spaces() {
             println!("{:#?}\n", rental_space);
-        }
-    }
-
-    fn print_splits(&self) {
-        for split in &self.storage.splits() {
-            println!("{:#?}\n", split);
         }
     }
 

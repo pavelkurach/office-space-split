@@ -6,7 +6,7 @@ fn example_storage() -> ObjectStorage {
         last_name: "Doe".to_string(),
         workspace_request: Some(WorkspaceRequest {
             nb_workstations: 10,
-            budget: 1000,
+            budget: 1_000_000_000,
         }),
     };
 

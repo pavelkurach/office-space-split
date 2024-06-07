@@ -8,7 +8,6 @@ use std::collections::HashMap;
 pub struct ObjectStorage {
     users: HashMap<String, User>,
     rental_spaces: HashMap<String, RentalSpace>,
-    splits: Vec<Split>,
 }
 
 impl ObjectStorage {
@@ -16,7 +15,6 @@ impl ObjectStorage {
         Self {
             users: HashMap::new(),
             rental_spaces: HashMap::new(),
-            splits: Vec::new(),
         }
     }
 
@@ -25,7 +23,6 @@ impl ObjectStorage {
     }
 
     pub fn add_rental_space(&mut self, rental_space: RentalSpace) {
-        self.splits.push((&rental_space).into());
         self.rental_spaces
             .insert((&rental_space).id_value().to_owned(), rental_space);
     }
@@ -44,9 +41,5 @@ impl ObjectStorage {
 
     pub fn rental_spaces(&self) -> Vec<&RentalSpace> {
         self.rental_spaces.values().collect()
-    }
-
-    pub fn splits(&self) -> Vec<&Split> {
-        self.splits.iter().collect()
     }
 }

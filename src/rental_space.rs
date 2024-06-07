@@ -31,38 +31,26 @@ pub struct AddRentalSpaceRequest {
     pub owner_id: String,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Split {
     base: BaseFields<SplitId>,
     name: String,
     address: String,
     surface: u32,
-    nb_workstations: u32,
-    price_per_workstation: u32,
+    pub nb_workstations: u32,
+    pub price_per_workstation: u32,
     parent_office_id: RentalSpaceId,
     owner_id: UserId,
 }
 
-#[derive(Debug)]
-struct SplitId {
+#[derive(Debug, Clone, Eq, PartialEq, Hash)]
+pub struct SplitId {
     value: String,
 }
 
 #[derive(Debug, Clone, Eq, PartialEq, Hash)]
 pub struct RentalSpaceId {
     value: String,
-}
-
-impl RentalSpaceId {
-    pub fn mathces(&self, id: &str) -> bool {
-        self.value == id
-    }
-}
-
-impl SplitId {
-    pub fn mathces(&self, id: &str) -> bool {
-        self.value == id
-    }
 }
 
 impl PrefixedUuid for RentalSpaceId {
@@ -95,6 +83,24 @@ impl RentalSpace {
 
     pub fn id_value(&self) -> &str {
         &self.id().value
+    }
+}
+
+impl Split {
+    pub fn id(&self) -> &SplitId {
+        &self.base.id
+    }
+
+    pub fn id_value(&self) -> &str {
+        &self.id().value
+    }
+
+    pub fn owner_id(&self) -> &UserId {
+        &self.owner_id
+    }
+
+    pub fn price(&self) -> u32 {
+        self.nb_workstations * self.price_per_workstation
     }
 }
 

@@ -1,3 +1,5 @@
+pub mod contract;
+pub mod matching;
 pub mod object_storage;
 pub mod rental_space;
 pub mod user;
@@ -16,7 +18,7 @@ pub trait PrefixedUuid {
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct BaseFields<Id: PrefixedUuid> {
     id: Id,
     created_at: DateTime<Utc>,

@@ -7,7 +7,7 @@ pub struct User {
     base: BaseFields<UserId>,
     first_name: String,
     last_name: String,
-    workspace_request: Option<WorkspaceRequest>,
+    pub workspace_request: Option<WorkspaceRequest>,
 }
 
 #[derive(Debug, Deserialize)]
