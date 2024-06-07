@@ -1,6 +1,6 @@
-use office_space_split::{rental_space::*, split::*, user::*};
+use office_space_split::{rental_space::*, split::*, user::*, user_interface::*, *};
 
-fn main() {
+fn example_storage() -> ObjectStorage {
     let add_user_request = AddUserRequest {
         first_name: "John".to_string(),
         last_name: "Doe".to_string(),
@@ -22,8 +22,18 @@ fn main() {
         owner_id: "usr-123".to_string(),
     };
 
-    match RentalSpace::new(add_rental_space_request, user.id().clone()) {
-        Ok(rental_space) => println!("{:#?}", rental_space),
-        Err(e) => println!("{:#?}", e),
+    let rental_space = RentalSpace::new(add_rental_space_request, user.id().clone()).unwrap();
+
+    let mut storage = ObjectStorage::new();
+    storage.add_user(user);
+    storage.add_rental_space(rental_space);
+    storage
+}
+
+fn main() {
+    let mut storage = example_storage();
+    let mut interface = Interface::new(&mut storage);
+    loop {
+        interface.inquire_command();
     }
 }
