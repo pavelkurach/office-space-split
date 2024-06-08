@@ -1,15 +1,16 @@
-use crate::{rental_space::SplitId, user::UserId, BaseFields, PrefixedUuid};
+use std::fmt;
 
-#[derive(Debug)]
+use crate::{rental_space::RentalSpaceId, user::UserId, BaseFields, PrefixedUuid};
+
 pub struct Contract {
     base: BaseFields<ContractId>,
-    split_id: SplitId,
+    rental_space_id: RentalSpaceId,
     host_id: UserId,
     guest_id: UserId,
+    nb_workstations: u32,
     price: u32,
 }
 
-#[derive(Debug)]
 pub struct ContractId {
     value: String,
 }
@@ -19,15 +20,50 @@ impl PrefixedUuid for ContractId {
 }
 
 impl Contract {
-    pub fn new(split_id: SplitId, host_id: UserId, guest_id: UserId, price: u32) -> Self {
+    pub fn new(
+        rental_space_id: RentalSpaceId,
+        host_id: UserId,
+        guest_id: UserId,
+        nb_workstations: u32,
+        price: u32,
+    ) -> Self {
         Self {
             base: BaseFields::new(ContractId {
                 value: ContractId::generate(),
             }),
-            split_id,
+            rental_space_id,
             host_id,
             guest_id,
+            nb_workstations,
             price,
         }
+    }
+}
+
+impl fmt::Debug for ContractId {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "{}", self.value)
+    }
+}
+
+impl fmt::Debug for Contract {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(
+            f,
+            "Contract {{
+    {:?},
+    rental_space_id: {:?},
+    host_id: {:?},
+    guest_id: {:?},
+    nb_workstations: {:?},
+    price: {:?}
+}}",
+            self.base,
+            self.rental_space_id,
+            self.host_id,
+            self.guest_id,
+            self.nb_workstations,
+            self.price
+        )
     }
 }

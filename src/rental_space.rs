@@ -2,12 +2,12 @@ use super::{BaseFields, PrefixedUuid};
 
 use {
     serde::Deserialize,
+    std::fmt,
     validator::{Validate, ValidationError},
 };
 
 use crate::user::UserId;
 
-#[derive(Debug)]
 pub struct RentalSpace {
     base: BaseFields<RentalSpaceId>,
     name: String,
@@ -39,16 +39,16 @@ pub struct Split {
     surface: u32,
     pub nb_workstations: u32,
     pub price_per_workstation: u32,
-    parent_office_id: RentalSpaceId,
-    owner_id: UserId,
+    pub parent_office_id: RentalSpaceId,
+    pub owner_id: UserId,
 }
 
-#[derive(Debug, Clone, Eq, PartialEq, Hash)]
+#[derive(Clone, Eq, PartialEq, Hash)]
 pub struct SplitId {
     value: String,
 }
 
-#[derive(Debug, Clone, Eq, PartialEq, Hash)]
+#[derive(Clone, Eq, PartialEq, Hash)]
 pub struct RentalSpaceId {
     value: String,
 }
@@ -59,6 +59,18 @@ impl PrefixedUuid for RentalSpaceId {
 
 impl PrefixedUuid for SplitId {
     const PREFIX: &'static str = "spl";
+}
+
+impl fmt::Debug for RentalSpaceId {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "{}", self.value)
+    }
+}
+
+impl fmt::Debug for SplitId {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "{}", self.value)
+    }
 }
 
 impl RentalSpace {
@@ -95,10 +107,6 @@ impl Split {
         &self.id().value
     }
 
-    pub fn owner_id(&self) -> &UserId {
-        &self.owner_id
-    }
-
     pub fn price(&self) -> u32 {
         self.nb_workstations * self.price_per_workstation
     }
@@ -118,6 +126,28 @@ impl Into<Split> for &RentalSpace {
             parent_office_id: self.base.id.clone(),
             owner_id: self.owner_id.clone(),
         }
+    }
+}
+
+impl fmt::Debug for RentalSpace {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(
+            f,
+            "{}:
+    {:?},
+    address: {},
+    surface: {},
+    nb_workstations: {},
+    price_per_workstation: {},
+    owner_id: {:?}",
+            self.name,
+            self.base,
+            self.address,
+            self.surface,
+            self.nb_workstations,
+            self.price_per_workstation,
+            self.owner_id
+        )
     }
 }
 

@@ -6,7 +6,6 @@ use crate::{contract::Contract, object_storage::ObjectStorage, rental_space::Spl
 pub struct Matchings {
     pub year_1_contracts: Vec<Contract>,
     pub year_2_contracts: Vec<Contract>,
-    splits: Vec<Split>,
 }
 
 pub struct MatchingEngine<'a> {
@@ -19,7 +18,6 @@ impl<'a> MatchingEngine<'a> {
     }
 
     pub fn get_greedy_matchings(&self) -> Matchings {
-        let mut matched_splits: Vec<Split> = Vec::new();
         let mut year_1_contracts: Vec<Contract> = Vec::new();
         let mut year_2_contracts: Vec<Contract> = Vec::new();
 
@@ -30,7 +28,7 @@ impl<'a> MatchingEngine<'a> {
             .filter(|user| user.workspace_request.is_some())
             .collect();
 
-        let mut splits: HashMap<String, Split> = self
+        let splits: HashMap<String, Split> = self
             .storage
             .rental_spaces()
             .into_iter()
@@ -51,7 +49,6 @@ impl<'a> MatchingEngine<'a> {
                 user,
                 &splits,
                 &mut available_splits,
-                &mut matched_splits,
                 &mut unmatched_users,
                 &mut year_1_contracts,
             );
@@ -66,7 +63,6 @@ impl<'a> MatchingEngine<'a> {
                 user,
                 &splits,
                 &mut available_splits,
-                &mut matched_splits,
                 &mut unmatched_users,
                 &mut year_2_contracts,
             );
@@ -75,7 +71,6 @@ impl<'a> MatchingEngine<'a> {
         Matchings {
             year_1_contracts,
             year_2_contracts,
-            splits: matched_splits,
         }
     }
 
@@ -83,7 +78,6 @@ impl<'a> MatchingEngine<'a> {
         user: &User,
         splits: &HashMap<String, Split>,
         available_splits: &mut HashSet<&str>,
-        matched_splits: &mut Vec<Split>,
         unmatched_users: &mut HashSet<&str>,
         contracts: &mut Vec<Contract>,
     ) {
@@ -102,12 +96,12 @@ impl<'a> MatchingEngine<'a> {
             available_splits.remove(split_id);
             let split = splits.get(split_id).unwrap().clone();
             contracts.push(Contract::new(
-                split.id().clone(),
-                split.owner_id().clone(),
+                split.parent_office_id.clone(),
+                split.owner_id.clone(),
                 user.id().clone(),
+                split.nb_workstations,
                 split.price().clone(),
             ));
-            matched_splits.push(split);
         }
     }
 }

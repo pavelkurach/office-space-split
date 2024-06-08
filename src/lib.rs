@@ -7,6 +7,7 @@ pub mod user_interface;
 
 use {
     chrono::{DateTime, Utc},
+    std::fmt,
     uuid::Uuid,
 };
 
@@ -18,10 +19,20 @@ pub trait PrefixedUuid {
     }
 }
 
-#[derive(Debug, Clone)]
+#[derive(Clone)]
 pub struct BaseFields<Id: PrefixedUuid> {
     id: Id,
     created_at: DateTime<Utc>,
+}
+
+impl<Id: PrefixedUuid + fmt::Debug> fmt::Debug for BaseFields<Id> {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(
+            f,
+            "id: {:?},\n    created_at: {:?}",
+            self.id, self.created_at
+        )
+    }
 }
 
 impl<Id: PrefixedUuid> BaseFields<Id> {
