@@ -152,4 +152,4 @@ The best candidate is the smallest rental space respecting the criteria above.
 
 ### With subsplitting
 
-At first, the best match is selected from rental spaces that cannot be split due to split constraits. If no such match is found, the algorithm will consider rental spaces that can be split into two splits such that one of them has the number of workspaces higher or equal to the number of workspaces requested by the user and corresponds to user's budget. The biggest such rental space will be selected.
+At first, the best match is selected from rental spaces that cannot be split due to split constraits. If no such match is found, the algorithm will consider rental spaces that can be split into two splits such that one of them has the number of workspaces higher or equal to the number of workspaces requested by the user and corresponds to user's budget. The biggest such rental space is be selected.
