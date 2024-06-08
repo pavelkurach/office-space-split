@@ -5,6 +5,7 @@ use crate::{
 
 use std::collections::HashMap;
 
+#[derive(Default)]
 pub struct ObjectStorage {
     users: HashMap<String, User>,
     rental_spaces: HashMap<String, RentalSpace>,
@@ -13,18 +14,17 @@ pub struct ObjectStorage {
 impl ObjectStorage {
     pub fn new() -> Self {
         Self {
-            users: HashMap::new(),
-            rental_spaces: HashMap::new(),
+            ..Default::default()
         }
     }
 
     pub fn add_user(&mut self, user: User) {
-        self.users.insert((&user).id_value().to_owned(), user);
+        self.users.insert(user.id_value().to_owned(), user);
     }
 
     pub fn add_rental_space(&mut self, rental_space: RentalSpace) {
         self.rental_spaces
-            .insert((&rental_space).id_value().to_owned(), rental_space);
+            .insert(rental_space.id_value().to_owned(), rental_space);
     }
 
     pub fn get_user(&self, id: &str) -> Option<&User> {

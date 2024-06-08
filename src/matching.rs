@@ -136,19 +136,19 @@ impl<'a> MatchingEngine<'a> {
     ) {
         let matched_rental_space_without_split = available_splits
             .iter()
-            .cloned()
-            .filter(|split_id| {
+            .filter(|&split_id| {
                 !splits
                     .get(split_id)
                     .unwrap()
                     .can_be_subsplit(user.workspace_request.as_ref().unwrap().nb_workstations)
             })
-            .filter(|split_id| {
+            .filter(|&split_id| {
                 let split = splits.get(split_id).unwrap();
                 split.nb_workstations >= user.workspace_request.as_ref().unwrap().nb_workstations
                     && split.price() <= user.workspace_request.as_ref().unwrap().budget
             })
-            .min_by_key(|split_id| splits.get(split_id).unwrap().nb_workstations);
+            .min_by_key(|&split_id| splits.get(split_id).unwrap().nb_workstations)
+            .map(String::to_owned);
 
         if let Some(split_id) = matched_rental_space_without_split {
             unmatched_users.remove(user.id_value());
@@ -159,19 +159,19 @@ impl<'a> MatchingEngine<'a> {
                 split.owner_id.clone(),
                 user.id().clone(),
                 split.nb_workstations,
-                split.price().clone(),
+                split.price(),
             ));
         } else {
             let matched_rental_space_with_split = available_splits
                 .iter()
-                .cloned()
-                .filter(|split_id| {
+                .filter(|&split_id| {
                     splits
                         .get(split_id)
                         .unwrap()
                         .can_be_subsplit(user.workspace_request.as_ref().unwrap().nb_workstations)
                 })
-                .max_by_key(|split_id| splits.get(split_id).unwrap().nb_workstations);
+                .max_by_key(|&split_id| splits.get(split_id).unwrap().nb_workstations)
+                .map(String::to_owned);
 
             if let Some(split_id) = matched_rental_space_with_split {
                 unmatched_users.remove(user.id_value());
@@ -187,7 +187,7 @@ impl<'a> MatchingEngine<'a> {
                     split1.owner_id.clone(),
                     user.id().clone(),
                     split1.nb_workstations,
-                    split1.price().clone(),
+                    split1.price(),
                 ));
             }
         }
@@ -219,7 +219,7 @@ impl<'a> MatchingEngine<'a> {
                 split.owner_id.clone(),
                 user.id().clone(),
                 split.nb_workstations,
-                split.price().clone(),
+                split.price(),
             ));
         }
     }
