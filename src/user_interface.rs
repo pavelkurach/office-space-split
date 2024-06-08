@@ -1,6 +1,6 @@
 use crate::{
     matching::MatchingEngine,
-    object_storage::ObjectStorage,
+    object_storage::{example_storage, ObjectStorage},
     rental_space::{AddRentalSpaceRequest, RentalSpace},
     user::{AddUserRequest, User},
 };
@@ -17,7 +17,7 @@ impl<'a> Interface<'a> {
     }
 
     pub fn inquire_command(&mut self) {
-        let commands: Vec<&str> = vec!["add", "print", "match", "exit"];
+        let commands: Vec<&str> = vec!["add", "print", "match", "add sample data", "exit"];
 
         let ans: Result<&str, InquireError> = Select::new("Select command", commands).prompt();
 
@@ -26,6 +26,10 @@ impl<'a> Interface<'a> {
                 "add" => self.add_object(),
                 "print" => self.print_objects(),
                 "match" => self.match_objects(),
+                "add sample data" => {
+                    self.storage.merge(example_storage());
+                    println!("Sample data added successfully!");
+                }
                 "exit" => std::process::exit(0),
                 _ => println!("Invalid command"),
             },
@@ -84,8 +88,22 @@ impl<'a> Interface<'a> {
     }
 
     pub fn match_objects(&mut self) {
+        let categories: Vec<&str> = vec!["yes", "no"];
+
+        let ans: Result<&str, InquireError> =
+            Select::new("Allow subsplitting?", categories).prompt();
+
+        let with_subsplit = match ans {
+            Ok("yes") => true,
+            Ok("no") => false,
+            _ => {
+                println!("Invalid category");
+                return;
+            }
+        };
+
         let matching_engine = MatchingEngine::new(self.storage);
-        let matchings = matching_engine.get_greedy_matchings();
+        let matchings = matching_engine.get_greedy_matchings(with_subsplit);
         println!("{:#?}", matchings);
     }
 

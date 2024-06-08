@@ -24,9 +24,9 @@ pub struct AddRentalSpaceRequest {
     pub name: String,
     pub address: String,
     pub surface: u32,
-    #[validate(range(exclusive_min = 40, exclusive_max = 180))]
+    #[validate(range(min = 40, max = 180))]
     pub nb_workstations: u32,
-    #[validate(range(exclusive_min = 300, max = 800))]
+    #[validate(range(min = 300, max = 800))]
     pub price_per_workstation: u32,
     pub owner_id: String,
 }
@@ -109,6 +109,64 @@ impl Split {
 
     pub fn price(&self) -> u32 {
         self.nb_workstations * self.price_per_workstation
+    }
+
+    pub fn subsplit_min_nb_workstations(&self) -> Option<u32> {
+        let min_nb_workstations_to_respect_density_constraint =
+            if self.nb_workstations * 8 < self.surface * 5 {
+                40
+            } else {
+                60
+            };
+
+        if self.nb_workstations > 2 * min_nb_workstations_to_respect_density_constraint {
+            Some(min_nb_workstations_to_respect_density_constraint)
+        } else {
+            None
+        }
+    }
+
+    pub fn subsplit_max_nb_workstations(&self) -> Option<u32> {
+        self.subsplit_min_nb_workstations()
+            .map(|min| self.nb_workstations - min)
+    }
+
+    pub fn can_be_subsplit(&self, nb_workstations: u32) -> bool {
+        self.subsplit_min_nb_workstations().is_some_and(|min| {
+            nb_workstations >= min && nb_workstations <= self.nb_workstations - min
+        })
+    }
+
+    pub fn subsplit(&self, nb_workstations: u32) -> Option<(Split, Split)> {
+        self.can_be_subsplit(nb_workstations).then(|| {
+            (
+                Split {
+                    base: BaseFields::new(SplitId {
+                        value: SplitId::generate(),
+                    }),
+                    name: self.name.to_owned(),
+                    address: self.address.to_owned(),
+                    surface: self.surface * nb_workstations / self.nb_workstations,
+                    nb_workstations,
+                    price_per_workstation: self.price_per_workstation,
+                    parent_office_id: self.parent_office_id.clone(),
+                    owner_id: self.owner_id.clone(),
+                },
+                Split {
+                    base: BaseFields::new(SplitId {
+                        value: SplitId::generate(),
+                    }),
+                    name: self.name.to_owned(),
+                    address: self.address.to_owned(),
+                    surface: self.surface * (self.nb_workstations - nb_workstations)
+                        / self.nb_workstations,
+                    nb_workstations: self.nb_workstations - nb_workstations,
+                    price_per_workstation: self.price_per_workstation,
+                    parent_office_id: self.parent_office_id.clone(),
+                    owner_id: self.owner_id.clone(),
+                },
+            )
+        })
     }
 }
 
