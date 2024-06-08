@@ -63,7 +63,7 @@ Once started, the program will prompt you to choose one of the following command
 
 ## Object model
 
-### Rental spaces
+### Rental space
 
 Rental spaces are represented by the following fields:
 
@@ -95,7 +95,7 @@ Example of request to add a rental space:
 }
 ```
 
-### Users
+### User
 
 Users are represented by the following fields:
 
@@ -126,7 +126,7 @@ The split object is used to represent the area that can be rented in a given ren
 
 The split object must respect the same constraints as the rental space object.
 
-### Contracts
+### Contract
 
 The contract object is used to represent the rental contract between a host and a guest in a rental space owned by the host. Each contract assumes a one year duration. The contract object consists of the following fields:
 
