@@ -7,4 +7,4 @@ COPY src ./src
 
 RUN cargo build --release
 
-CMD ["./target/release/office-space-split"]
+CMD ["./target/release/office_space_split"]
