@@ -11,7 +11,7 @@ To download the program, you can follow the following steps:
 1. Clone the repository
 
 ```bash
-git clone https://github.com/pavelkurach/office-space-split.github
+git clone https://github.com/pavelkurach/office-space-split.git
 ```
 
 2. Step into the project directory
