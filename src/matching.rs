@@ -178,7 +178,6 @@ impl<'a> MatchingEngine<'a> {
                     );
                     nb_workstations_in_split * split.price_per_workstation
                         <= user.workspace_request.as_ref().unwrap().budget
-                    
                 })
                 .max_by_key(|&split_id| splits.get(split_id).unwrap().nb_workstations)
                 .map(String::to_owned);

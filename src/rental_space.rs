@@ -132,9 +132,8 @@ impl Split {
     }
 
     pub fn can_be_subsplit(&self, nb_workstations: u32) -> bool {
-        self.subsplit_min_nb_workstations().is_some_and(|min| {
-            nb_workstations <= self.nb_workstations - min
-        })
+        self.subsplit_min_nb_workstations()
+            .is_some_and(|min| nb_workstations <= self.nb_workstations - min)
     }
 
     pub fn subsplit(&self, nb_workstations: u32) -> Option<(Split, Split)> {
