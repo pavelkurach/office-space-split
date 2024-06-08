@@ -133,12 +133,16 @@ impl Split {
 
     pub fn can_be_subsplit(&self, nb_workstations: u32) -> bool {
         self.subsplit_min_nb_workstations().is_some_and(|min| {
-            nb_workstations >= min && nb_workstations <= self.nb_workstations - min
+            nb_workstations <= self.nb_workstations - min
         })
     }
 
     pub fn subsplit(&self, nb_workstations: u32) -> Option<(Split, Split)> {
         self.can_be_subsplit(nb_workstations).then(|| {
+            let nb_workstations = std::cmp::max(
+                self.subsplit_min_nb_workstations().unwrap(),
+                nb_workstations,
+            );
             (
                 Split {
                     base: BaseFields::new(SplitId {
@@ -170,19 +174,19 @@ impl Split {
     }
 }
 
-impl Into<Split> for &RentalSpace {
-    fn into(self) -> Split {
+impl From<&RentalSpace> for Split {
+    fn from(val: &RentalSpace) -> Self {
         Split {
             base: BaseFields::new(SplitId {
                 value: SplitId::generate(),
             }),
-            name: self.name.to_owned(),
-            address: self.address.to_owned(),
-            surface: self.surface,
-            nb_workstations: self.nb_workstations,
-            price_per_workstation: self.price_per_workstation,
-            parent_office_id: self.base.id.clone(),
-            owner_id: self.owner_id.clone(),
+            name: val.name.to_owned(),
+            address: val.address.to_owned(),
+            surface: val.surface,
+            nb_workstations: val.nb_workstations,
+            price_per_workstation: val.price_per_workstation,
+            parent_office_id: val.base.id.clone(),
+            owner_id: val.owner_id.clone(),
         }
     }
 }

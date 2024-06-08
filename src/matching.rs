@@ -170,6 +170,16 @@ impl<'a> MatchingEngine<'a> {
                         .unwrap()
                         .can_be_subsplit(user.workspace_request.as_ref().unwrap().nb_workstations)
                 })
+                .filter(|&split_id| {
+                    let split = splits.get(split_id).unwrap();
+                    let nb_workstations_in_split = std::cmp::max(
+                        split.subsplit_min_nb_workstations().unwrap(),
+                        user.workspace_request.as_ref().unwrap().nb_workstations,
+                    );
+                    nb_workstations_in_split * split.price_per_workstation
+                        <= user.workspace_request.as_ref().unwrap().budget
+                    
+                })
                 .max_by_key(|&split_id| splits.get(split_id).unwrap().nb_workstations)
                 .map(String::to_owned);
 
