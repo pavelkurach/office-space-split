@@ -36,7 +36,7 @@ docker build -t office-space-split .
 4. Run the Docker container
 
 ```bash
-docker run office-space-split
+docker run -it office-space-split
 ```
 
 ### Natively
